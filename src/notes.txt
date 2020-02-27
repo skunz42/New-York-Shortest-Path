@@ -1,0 +1,7 @@
+Project Notes:
+
+Shortest Path Routes should be between 1p and 2p cities
+
+All 4p or above should be included in at least one route
+
+To generate edges, 30 miles from any node => +- .5 for lat, +- .7 for lng
