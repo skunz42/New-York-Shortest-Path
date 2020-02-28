@@ -8,6 +8,9 @@ class Graph:
         self.nodes = []
         self.edges = []
 
+    '''
+        Creates nodes from csv
+    '''
     def createNodes(self):
         with open('nodes.csv', newline='') as csv_file:
             rd = csv.reader(csv_file)
@@ -15,6 +18,9 @@ class Graph:
                 n = Node(r[0], float(r[1]), float(r[2]), int(r[3]), r[4])
                 self.nodes.append(n)
 
+    '''
+        Creates edges based on distance (~30 miles)
+    '''
     def createEdges(self):
         for n in self.nodes:
             for m in self.nodes:
@@ -23,16 +29,20 @@ class Graph:
                     e = Edge(n.getName(), m.getName(), dist)
                     self.edges.append(e)
 
+    '''
+        Creates the adjacency lists for each node
+    '''
     def createAdjLists(self):
         for n in self.nodes:
             for e in self.edges:
                 if e.getSource() == n.getName() and e.getSource() != e.getDest():
                     n.setAdjList(e)
 
-        for n in self.nodes:
-            for e in n.getAdjList():
-                print(e.getSource() + " to " + e.getDest())
-
+    '''
+        For manual edge creation
+        @param - src - Starting city name
+        @param dest - Ending city name
+    '''
     def addEdge(self, src, dest):
         slat = 0.0
         slng = 0.0
