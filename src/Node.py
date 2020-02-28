@@ -1,3 +1,5 @@
+import sys
+
 class Node:
     def __init__(self, name, lat, lng, pop, priority):
         self.name = name
@@ -6,6 +8,14 @@ class Node:
         self.pop = pop
         self.priority = priority
         self.adjList = []
+
+        self.dist = float("inf") # dist from source
+        self.prev = None # predecessor
+        self.visited = False
+
+    # Override
+    def __lt__(self, other):
+        return self.dist < other.dist
 
     def getName(self):
         return self.name
@@ -27,3 +37,21 @@ class Node:
 
     def getAdjList(self):
         return self.adjList
+
+    def getDist(self):
+        return self.dist
+
+    def getPrev(self):
+        return self.prev
+
+    def setDist(self, dist):
+        self.dist = dist
+
+    def setPrev(self, prev):
+        self.prev = prev
+
+    def getVisited(self):
+        return self.visited
+
+    def setVisited(self, bool):
+        self.visited = bool

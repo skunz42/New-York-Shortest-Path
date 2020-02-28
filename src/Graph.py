@@ -1,4 +1,5 @@
 import csv
+import heapq
 
 from Node import Node
 from Edge import Edge
@@ -67,6 +68,52 @@ class Graph:
             e = Edge(d.getName(), s.getName(), dist)
             self.edges.append(e)
 
+    def dijkstra(self, srcStr, destStr):
+        src = None
+        dest = None
+        for n in self.nodes:
+            if n.getName() == srcStr:
+                src = n
+            if n.getName() == destStr:
+                dest = n
+
+        pq = []
+        src.setDist(0.0)
+        for n in self.nodes:
+            heapq.heappush(pq, n)
+
+        minNode = None
+
+        while pq:
+            minNode = heapq.heappop(pq)
+            if minNode == dest:
+                break
+
+            for n in minNode.getAdjList():
+                dname = n.getDest()
+                neighbor = None
+                for m in self.nodes:
+                    if m.getName() == dname:
+                        neighbor = m
+                neighbor.setVisited(True)
+                alt = minNode.getDist() + n.getDist()
+                if alt < neighbor.getDist():
+                    neighbor.setDist(alt)
+                    neighbor.setPrev(minNode)
+
+            heapq.heapify(pq)
+
+        it = dest
+        if dest is not None and it is not None:
+            path = []
+            while it != src:
+                path.append(it.getName())
+                if it is not None:
+                    it = it.getPrev()
+
+            path.append(src.getName())
+            print(path[::-1])
+
 def main():
     g = Graph()
     g.createNodes()
@@ -78,4 +125,5 @@ def main():
     g.addEdge("Lake Placid, NY", "Glens Falls, NY")
     g.addEdge("Massena, NY", "Malone, NY")
     g.createAdjLists()
+    g.dijkstra("Binghamton, NY", "Erie, PA")
 main()
