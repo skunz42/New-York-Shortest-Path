@@ -90,9 +90,13 @@ class Graph:
         src = self.getCity(srcStr)
         dest = self.getCity(destStr)
         pq = []
-        src.setDist(0.0)
         for n in self.nodes:
+            n.setDist(float("inf"))
+            n.setPrev(None)
+            n.setVisited(False)
             heapq.heappush(pq, n)
+
+        src.setDist(0.0)
 
         minNode = None
         while pq:
@@ -115,6 +119,7 @@ class Graph:
         it = dest
         if dest is not None and it is not None:
             path = []
+            #print(src.getName() + '\t' + dest.getName())
             while it != src:
                 path.append(it.getName())
                 if it is not None:
@@ -122,11 +127,21 @@ class Graph:
             path.append(src.getName())
             print(path[::-1])
 
+    def makeMap(self):
+        cs = set()
+        for n in self.nodes:
+            for m in self.nodes:
+                if int(n.getPriority()) < 2 and int(m.getPriority()) < 2 and \
+                n.getName() != m.getName() and m.getName() not in cs:
+                    self.dijkstra(n.getName(), m.getName())
+            cs.add(n.getName())
+
 def main():
     g = Graph()
     g.createNodes()
     g.createEdges()
     g.addtlEdges()
     g.createAdjLists()
-    g.dijkstra(sys.argv[1], sys.argv[2])
+    #g.dijkstra(sys.argv[1], sys.argv[2])
+    g.makeMap()
 main()
