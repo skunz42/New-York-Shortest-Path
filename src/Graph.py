@@ -1,5 +1,6 @@
 import csv
 import heapq
+import sys
 
 from Node import Node
 from Edge import Edge
@@ -45,21 +46,13 @@ class Graph:
         @param dest - Ending city name
     '''
     def addEdge(self, src, dest):
-        slat = 0.0
-        slng = 0.0
-        dlat = 0.0
-        dlng = 0.0
-        s = None
-        d = None
-        for n in self.nodes:
-            if n.getName() == src:
-                slat = n.getLat()
-                slng = n.getLng()
-                s = n
-            if n.getName() == dest:
-                dlat = n.getLat()
-                dlng = n.getLng()
-                d = n
+        slat = slng = dlat = dlng = 0.0
+        s = self.getCity(src)
+        slat = s.getLat()
+        slng = s.getLng()
+        d = self.getCity(dest)
+        dlat = d.getLat()
+        dlng = d.getLng()
 
         if s and d:
             dist = ((s.getLat()-d.getLat())**2 + (s.getLng()-d.getLng())**2)**0.5
@@ -68,27 +61,44 @@ class Graph:
             e = Edge(d.getName(), s.getName(), dist)
             self.edges.append(e)
 
-    def dijkstra(self, srcStr, destStr):
-        src = None
-        dest = None
-        for n in self.nodes:
-            if n.getName() == srcStr:
-                src = n
-            if n.getName() == destStr:
-                dest = n
+    '''
+        Adds additional nodes that are not created in the initial call
+    '''
+    def addtlEdges(self):
+        self.addEdge("Binghamton, NY", "Scranton, PA")
+        self.addEdge("Scranton, PA", "East Stroudsburg, PA")
+        self.addEdge("East Stroudsburg, PA", "Newark, NJ")
+        self.addEdge("Lake Placid, NY", "Plattsburgh, NY")
+        self.addEdge("Lake Placid, NY", "Glens Falls, NY")
+        self.addEdge("Massena, NY", "Malone, NY")
 
+    '''
+        Finds city given name
+    '''
+    def getCity(self, name):
+        for n in self.nodes:
+            if n.getName() == name:
+                return n
+        return None
+
+    '''
+        Calculates shortest path
+        @param - srcStr - start city
+        @param - destStr - dest city
+    '''
+    def dijkstra(self, srcStr, destStr):
+        src = self.getCity(srcStr)
+        dest = self.getCity(destStr)
         pq = []
         src.setDist(0.0)
         for n in self.nodes:
             heapq.heappush(pq, n)
 
         minNode = None
-
         while pq:
             minNode = heapq.heappop(pq)
             if minNode == dest:
                 break
-
             for n in minNode.getAdjList():
                 dname = n.getDest()
                 neighbor = None
@@ -96,11 +106,10 @@ class Graph:
                     if m.getName() == dname:
                         neighbor = m
                 neighbor.setVisited(True)
-                alt = minNode.getDist() + n.getDist()
+                alt = minNode.getDist() + n.getDist() + (1000/neighbor.getPop())
                 if alt < neighbor.getDist():
                     neighbor.setDist(alt)
                     neighbor.setPrev(minNode)
-
             heapq.heapify(pq)
 
         it = dest
@@ -110,7 +119,6 @@ class Graph:
                 path.append(it.getName())
                 if it is not None:
                     it = it.getPrev()
-
             path.append(src.getName())
             print(path[::-1])
 
@@ -118,12 +126,7 @@ def main():
     g = Graph()
     g.createNodes()
     g.createEdges()
-    g.addEdge("Binghamton, NY", "Scranton, PA")
-    g.addEdge("Scranton, PA", "East Stroudsburg, PA")
-    g.addEdge("East Stroudsburg, PA", "Newark, NJ")
-    g.addEdge("Lake Placid, NY", "Plattsburgh, NY")
-    g.addEdge("Lake Placid, NY", "Glens Falls, NY")
-    g.addEdge("Massena, NY", "Malone, NY")
+    g.addtlEdges()
     g.createAdjLists()
-    g.dijkstra("Binghamton, NY", "Erie, PA")
+    g.dijkstra(sys.argv[1], sys.argv[2])
 main()
