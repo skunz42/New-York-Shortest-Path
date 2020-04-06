@@ -14,7 +14,8 @@ class Graph:
         Creates nodes from csv
     '''
     def createNodes(self):
-        with open('nodes.csv', newline='') as csv_file:
+        fn = '../assets/nodes.csv'
+        with open(fn, newline='') as csv_file:
             rd = csv.reader(csv_file)
             for r in rd:
                 n = Node(r[0], float(r[1]), float(r[2]), int(r[3]), r[4])
